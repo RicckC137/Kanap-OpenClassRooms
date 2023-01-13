@@ -93,15 +93,21 @@ const addKanapToDom = (kanap) => {
     const colorInCaddy = articleColorInPage.dataset.color;
     const articleIdInPage = document.querySelector(".cart__item");
     const idInCaddy = articleIdInPage.dataset.id;
+
+
     const itemQuantityArray = document.querySelectorAll(".itemQuantity").forEach(element => {
         element.addEventListener('change', (e) => {
-            const liveQuantity = e.currentTarget.value;
+            var liveQuantity = e.currentTarget.value;
             const color = e.currentTarget.getAttribute('color');
             const id = e.currentTarget.id;
             let kanapFromStorage = JSON.parse(localStorage.getItem("cart"));
 
+
             for (let i of kanapFromStorage) {
+
+
                 if (id === i.id && color === i.color) {
+
                     i.quantity = liveQuantity;
                     console.log(i)
                     var newTotal = liveQuantity * priceOfKanap;
@@ -112,38 +118,17 @@ const addKanapToDom = (kanap) => {
                     }, 0)
                     console.log(sumQty)
                     totalQuantity.textContent = sumQty;
+
                     let priceTotalByPiece = kanap.quantity * priceOfKanap;
                     sumTotal += priceTotalByPiece;
-                    cartsumTotal.textContent = newTotal
-
-
-                    // let priceTotalByPiece = liveQuantity * priceOfKanap;
-                    // const newTotal2 = (sumTotal - newTotal) + priceOfKanap;
-                    // cartsumTotal.textContent = newTotal2
+                    localStorage.setItem('cart', JSON.stringify(kanapFromStorage))
                 }
-                kanapFromStorage.forEach(element => {
-                    sumTotal = 0;
-                    sumTotal += newTotal
-                    console.log(sumTotal)
-
-                    // console.log(element)
-                    // console.log(priceOfKanap)
-                    // const kanapPriceByElement = Number(element.quantity) * Number(priceOfKanap)
-                    // console.log(kanapPriceByElement)
-
-                });
-                // sumTotal = 0;
-                // sumTotal += newTotal
-                // console.log(sumTotal)
-
             }
-
-
-
-            localStorage.setItem('cart', JSON.stringify(kanapFromStorage))
         })
-    }
-    )
+    })
+
+
+
     const deleteButton = document.querySelectorAll(".deleteItem").forEach(element => {
         element.addEventListener('click', (e) => {
 
@@ -174,124 +159,193 @@ const addKanapToDom = (kanap) => {
         )
     })
 
-    function formValidation() {
+    const form = document.querySelector(".cart__order__form");
 
-        let firstName = document.getElementById('#firstName');
-        let form = document.querySelector(".cart__order__form");
+    // Prénom
+    form.firstName.addEventListener('change', function () {
+        validFirstName(this);
+    })
 
-        let generalRegex = /^[a-zA-Z ,.'-]+$/;
+    const validFirstName = function (inputFirstName) {
+        let firstNameRegex = new RegExp("^[a-zA-Z ,.'-]+$");
 
-        form.firstName.addEventListener('change', function () {
-            validFirstName(this);
-        });
+        let testFirstName = firstNameRegex.test(inputFirstName.value)
 
-        const validFirstName = function (e) {
-            let firstNameError = e.nextElementSibling;
+        const errorFirstName = document.querySelector("#firstNameErrorMsg")
 
-            if (generalRegex.test(e.value)) {
-
-            } else {
-                firstNameError.textContent = 'Merci de remplir ce champ';
-            }
-        };
-        form.lastName.addEventListener('change', function () {
-            validLastName(this);
-        });
-
-
-        const validLastName = function (e) {
-            let lastNameError = e.nextElementSibling;
-
-            if (generalRegex.test(e.value)) {
-
-            } else {
-                lastNameError.textContent = 'Merci de remplir ce champ';
-            }
-        };
-        let addressRegex = /[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+/;
-        form.address.addEventListener('change', function () {
-            validAddress(this);
-        });
-        const validAddress = function (e) {
-            let addressError = e.nextElementSibling;
-            if (addressRegex.test(e.value)) {
-
-            } else {
-                addressError.textContent = 'Merci de remplir ce champ';
-            }
-        };
-        form.city.addEventListener('change', function () {
-            validCity(this);
-        });
-        const validCity = function (e) {
-            let cityError = e.nextElementSibling;
-            if (generalRegex.test(e.value)) {
-            } else {
-                cityError.textContent = 'Merci de remplir ce champ';
-            }
-        };
-        let mailRegEx = new RegExp('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$');
-        form.email.addEventListener('change', function () {
-            validEmail(this);
-        });
-        const validEmail = function (e) {
-            let emailError = e.nextElementSibling;
-            if (mailRegEx.test(e.value)) {
-
-            } else {
-                emailError.textContent = 'Merci de remplir ce champ';
-            }
-        };
-
-        if (validEmail && validCity && validAddress && validLastName) {
-            function formToLocalStorage() {
-                const order = document.getElementById("order");
-                order.addEventListener("click", (e) => {
-
-
-                    let inputName = document.getElementById('firstName').value;
-                    let inputLastName = document.getElementById('lastName').value;
-                    let inputAdress = document.getElementById('address').value;
-                    let inputCity = document.getElementById('city').value;
-                    let inputMail = document.getElementById('email').value;
-                    if (inputName && inputLastName && inputAdress && inputCity && inputMail) {
-                        let products = [];
-                        for (let i of parseKanap) {
-                            products.push(i.id);
-
-                        }
-                        const orderdetails = {
-                            contact: {
-                                firstName: inputName,
-                                lastName: inputLastName,
-                                address: inputAdress,
-                                city: inputCity,
-                                email: inputMail,
-                            },
-
-                            products,
-                        }
-                        fetch("http://localhost:3000/api/products/order",
-                            {
-                                method: 'POST',
-                                body: JSON.stringify(orderdetails),
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
-                            })
-                            .then((response) => response.json(response))
-                            .then((data) => {
-                                localStorage.setItem("orderId", data.orderId);
-                                document.location.href = "confirmation.html";
-                            })
-
-                    } else {
-                        alert('Merci de remplir tous les champs afin de pouvoir valider la commande')
-                    }
-                });
-            } formToLocalStorage()
+        if (testFirstName) {
+            console.log('true');
+            errorFirstName.textContent = ""
+            return true
+        }
+        else {
+            errorFirstName.textContent = "Erreur sur le prénom";
+            return false
         }
     }
-    formValidation();
+
+    //Nom
+
+    form.lastName.addEventListener('change', function () {
+        validLastName(this);
+    })
+
+    const validLastName = function (inputLastName) {
+        let lastNameRegex = new RegExp("^[a-zA-Z ,.'-]+$");
+
+        let testLastName = lastNameRegex.test(inputLastName.value)
+
+        const errorLastName = document.querySelector("#lastNameErrorMsg")
+
+        if (testLastName) {
+            console.log('true');
+            errorLastName.textContent = ""
+            return true
+        }
+        else {
+            errorLastName.textContent = "Erreur sur le nom"
+            return false
+        }
+    }
+
+    // Adresse
+
+    form.address.addEventListener('change', function () {
+        validAddress(this);
+    })
+
+    const validAddress = function (inputAdress) {
+        let addressRegex = new RegExp("[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+");
+
+        let testAddress = addressRegex.test(inputAdress.value)
+
+        const errorAddress = document.querySelector("#addressErrorMsg")
+
+
+        if (testAddress) {
+            console.log('true');
+            errorAddress.textContent = ""
+            return true
+        }
+        else {
+
+            errorAddress.textContent = "Erreur sur l'adresse"
+            return false
+        }
+    }
+
+    // Ville
+
+    form.city.addEventListener('change', function () {
+        validCity(this);
+    })
+
+    const validCity = function (inputCity) {
+        let cityRegex = new RegExp("^[a-zA-Z ,.'-]+$");
+
+        let testCity = cityRegex.test(inputCity.value);
+
+        const errorCity = document.querySelector("#cityErrorMsg");
+
+        if (testCity) {
+            console.log('true');
+            errorCity.textContent = ""
+            return true
+        }
+        else {
+            errorCity.textContent = "Erreur sur l'orthographe de la ville"
+            return false
+        }
+    }
+
+    // Mail
+
+    form.email.addEventListener('change', function () {
+        validEmail(this);
+    })
+
+    const validEmail = function (inputEmail) {
+        let emailRegex = new RegExp('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$');
+
+        let testEmail = emailRegex.test(inputEmail.value)
+
+        const errorEmail = document.querySelector("#emailErrorMsg");
+
+
+        if (testEmail) {
+            console.log('true');
+            errorEmail.textContent = ""
+            return true
+        }
+        else {
+
+            errorEmail.textContent = "Erreur sur l'email"
+            return false
+        }
+    }
+
+
+
+    function formToLocalStorage() {
+        const submit = document.getElementById("order");
+        submit.addEventListener("click", (e) => {
+            e.preventDefault();
+            console.log(e)
+
+            if (validEmail(form.email) && validCity(form.city) && validAddress(form.address)
+                && validFirstName(form.firstName) && validLastName(form.lastName)
+            ) {
+
+                let inputName = document.getElementById('firstName').value;
+                let inputLastName = document.getElementById('lastName').value;
+                let inputAdress = document.getElementById('address').value;
+                let inputCity = document.getElementById('city').value;
+                let inputMail = document.getElementById('email').value;
+
+                let products = [];
+                console.log(products)
+
+                for (let i of parseKanap) {
+                    products.push(i.id);
+
+                }
+                const orderdetails = {
+                    contact: {
+                        firstName: inputName,
+                        lastName: inputLastName,
+                        address: inputAdress,
+                        city: inputCity,
+                        email: inputMail,
+                    },
+
+                    products,
+                }
+                fetch("http://localhost:3000/api/products/order",
+                    {
+                        method: 'POST',
+                        body: JSON.stringify(orderdetails),
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    })
+                    .then((response) => response.json(response))
+                    .then((data) => {
+                        localStorage.setItem("orderId", data.orderId);
+                        document.location.href = "confirmation.html";
+                    })
+
+            }
+            else {
+                alert("Merci de corriger les informations entrées dans le formulaire")
+                console.log("ne fonctionne pas")
+            }
+        }
+        )
+
+    }
+
+
+    formToLocalStorage();
 }
+
 fetchProducts();
