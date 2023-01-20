@@ -1,30 +1,43 @@
+// Récupération des données auprès de l'API en utilisant l'ID du produit comme clé d'accès
+
 const urlSearch = new URLSearchParams(window.location.search);
 var id = urlSearch.get("id");
-console.log(id);
 
 
 fetch(`http://localhost:3000/api/products/${id}/`)
     .then((response) => response.json())
     .then((res) => selectKanap(res));
 
+// constante qui insère les éléments du DOM
+
 const selectKanap = (kanap) => {
+
+    //Image
     const kanapImg = document.querySelector(".item__img");
     const imgElement = document.createElement('img');
     imgElement.src = kanap.imageUrl;
     imgElement.alt = kanap.altTxt;
 
+    //Titre
     const kanapName = document.querySelector("#title");
     kanapName.textContent = kanap.name;
 
+    //Prix
     const kanapPrice = document.querySelector("#price");
     kanapPrice.textContent = kanap.price;
+
+    //Description
 
     const kanapDescription = document.querySelector("#description");
     kanapDescription.textContent = kanap.description;
     kanapImg.appendChild(imgElement);
 
+    // Couleur
+
     const chooseColor = document.querySelector("#colors");
     var color = kanap.colors;
+
+    //Foreach pour permettre l'affichache dynamique de toutes les couleurs disponibles avec le nombre de case qui correspond
 
     color.forEach((color) => {
         const option = document.createElement("option");
@@ -35,11 +48,14 @@ const selectKanap = (kanap) => {
     addValidationEvent();
 }
 
+// Listener pour le bouton validation pour envoi au panier
+
 const addValidationEvent = () => {
     const caddyValidation = document.querySelector("#addToCart");
     caddyValidation.addEventListener("click", () => submit())
 }
 
+// Gestion de la quantité au niveau du local storage
 const submit = () => {
     let quantity = document.querySelector("#quantity").value;
     const color = document.querySelector("#colors").value;
@@ -63,28 +79,20 @@ const submit = () => {
             );
 
             if (newKanap) {
-                console.log(newKanap.quantity);
-                console.log(kanap.quantity);
-                console.log(newKanap.quantity)
                 newKanap.quantity = Number(kanap.quantity) + Number(newKanap.quantity);
-                console.log(newKanap.quantity);
-
                 localStorage.setItem("cart", JSON.stringify(parseKanap));
                 alert("Ajouté au panier")
-                console.log("passe par là")
             } else {
                 parseKanap.push(kanap);
                 localStorage.setItem("cart", JSON.stringify(parseKanap));
+                alert("Ajouté au panier")
+
             }
         } else {
-
-            console.log("passe là")
             parseKanap = [];
             parseKanap.push(kanap);
             localStorage.setItem("cart", JSON.stringify(parseKanap));
-
             alert("Ajouté au panier")
-
         }
     }
 

@@ -1,8 +1,10 @@
 
+// Fetch pour récupérer tous les produits ainsi que toutes les informations des produits au niveau de l'API
 
 fetch("http://localhost:3000/api/products/")
     .then((response) => response.json())
 
+    // Fonction pour remplir tous les éléments du DOM avec les éléments correspondants au niveau de l'API
     .then(function (kanaps) {
         for (let kanap of kanaps) {
             const els = document.getElementById("items");
