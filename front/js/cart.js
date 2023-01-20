@@ -349,74 +349,73 @@ const addKanapToDom = (kanap) => {
     }
 
 
-    function submit() { }
-    document.getElementById("order").addEventListener("click", (e) => {
-        e.preventDefault();
-        let totalInQuantity = totalQuantity.textContent;
-
-        //Fonction validation de la quantité
-        if (totalInQuantity <= 0) {
+    function submit() {
+        document.getElementById("order").addEventListener("click", (e) => {
             e.preventDefault();
-            alert("Quantité du panier insuffisante, merci d'ajouter un produit à votre commande");
+            let totalInQuantity = totalQuantity.textContent;
 
-            return
+            //Fonction validation de la quantité
+            if (totalInQuantity <= 0) {
+                e.preventDefault();
+                alert("Quantité du panier insuffisante, merci d'ajouter un produit à votre commande");
 
-        }
-        else if // Validation des éléments saisis dans le formulaire par l'utilisateur
-            (validEmail(form.email) && validCity(form.city) && validAddress(form.address)
-            && validFirstName(form.firstName) && validLastName(form.lastName)) {
-
-            // Si oui, récupérer les inputs afin de valider la commande
-            let inputName = document.getElementById('firstName').value;
-            let inputLastName = document.getElementById('lastName').value;
-            let inputAdress = document.getElementById('address').value;
-            let inputCity = document.getElementById('city').value;
-            let inputMail = document.getElementById('email').value;
-
-            // Insérer les produits dans un objet de type array
-            let products = [];
-            console.log(products)
-
-            for (let i of parseKanap) {
-                products.push(i.id);
+                return
 
             }
-            // Construire une variable regroupant l'array des produits ainsi qu'un objet contact 
-            // prenant en compte toutes les informations du client pour otbenir un numèro de commande
-            // en passant par un fetch auprès de l'API
+            else if // Validation des éléments saisis dans le formulaire par l'utilisateur
+                (validEmail(form.email) && validCity(form.city) && validAddress(form.address)
+                && validFirstName(form.firstName) && validLastName(form.lastName)) {
 
-            const orderdetails = {
-                contact: {
-                    firstName: inputName,
-                    lastName: inputLastName,
-                    address: inputAdress,
-                    city: inputCity,
-                    email: inputMail,
-                },
+                // Si oui, récupérer les inputs afin de valider la commande
+                let inputName = document.getElementById('firstName').value;
+                let inputLastName = document.getElementById('lastName').value;
+                let inputAdress = document.getElementById('address').value;
+                let inputCity = document.getElementById('city').value;
+                let inputMail = document.getElementById('email').value;
 
-                products,
-            }
-            fetch("http://localhost:3000/api/products/order",
-                {
-                    method: 'POST',
-                    body: JSON.stringify(orderdetails),
-                    headers: {
-                        "Content-Type": "application/json",
+                // Insérer les produits dans un objet de type array
+                let products = [];
+                console.log(products)
+
+                for (let i of parseKanap) {
+                    products.push(i.id);
+
+                }
+                // Construire une variable regroupant l'array des produits ainsi qu'un objet contact 
+                // prenant en compte toutes les informations du client pour otbenir un numèro de commande
+                // en passant par un fetch auprès de l'API
+
+                const orderdetails = {
+                    contact: {
+                        firstName: inputName,
+                        lastName: inputLastName,
+                        address: inputAdress,
+                        city: inputCity,
+                        email: inputMail,
                     },
-                })
-                .then((response) => response.json(response))
-                .then((data) => {
-                    localStorage.setItem("orderId", data.orderId);
-                    document.location.href = "confirmation.html";
-                })
 
-        } else {
-            alert("Informations manquantes ")
+                    products,
+                }
+                fetch("http://localhost:3000/api/products/order",
+                    {
+                        method: 'POST',
+                        body: JSON.stringify(orderdetails),
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    })
+                    .then((response) => response.json(response))
+                    .then((data) => {
+                        localStorage.setItem("orderId", data.orderId);
+                        document.location.href = "confirmation.html";
+                    })
+
+            } else {
+                alert("Informations manquantes ")
+            }
+
         }
-
-    }
-
-    )
+        )
+    } submit();
 }
-
 fetchProducts();
