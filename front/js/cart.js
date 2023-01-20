@@ -150,6 +150,7 @@ const addKanapToDom = (kanap) => {
 
                 for (let i of kanapFromStorage) {
 
+
                     if (id === i.id && color === i.color) {
 
                         i.quantity = liveQuantity;
@@ -162,8 +163,17 @@ const addKanapToDom = (kanap) => {
 
                         console.log(sumQty)
                         totalQuantity.textContent = sumQty;
-                    }
 
+                        if (liveQuantity < 0 && sumQty < 0) {
+
+                            i.quantity = 0;
+
+                            liveQuantity = 0;
+                            input.value = 0;
+
+
+                        }
+                    }
 
                 }
 
@@ -338,25 +348,19 @@ const addKanapToDom = (kanap) => {
         }
     }
 
-    // console.log(sumQty)
-    // let kanapFromStorage = JSON.parse(localStorage.getItem("cart"));
-    // console.log(kanapFromStorage)
 
-    // for (const i of kanapFromStorage) {
-    //     var quantity = i.quantity
-    //     console.log(quantity)
-    // }
-
-    // Fonction validation commande
 
     function submit() { }
     document.getElementById("order").addEventListener("click", (e) => {
         e.preventDefault();
+        const itemQuantity = document.querySelector(".itemQuantity").value;
+        console.log(itemQuantity)
 
         //Fonction validation de la quantité
-        if (parseKanap.length === 0) {
+        if (itemQuantity < 1) {
             e.preventDefault();
             alert("Quantité du panier insuffisante, merci d'ajouter un produit à votre commande");
+
             return
 
         }
