@@ -349,15 +349,13 @@ const addKanapToDom = (kanap) => {
     }
 
 
-
     function submit() { }
     document.getElementById("order").addEventListener("click", (e) => {
         e.preventDefault();
-        const itemQuantity = document.querySelector(".itemQuantity").value;
-        console.log(itemQuantity)
+        let totalInQuantity = totalQuantity.textContent;
 
         //Fonction validation de la quantité
-        if (itemQuantity < 1) {
+        if (totalInQuantity <= 0) {
             e.preventDefault();
             alert("Quantité du panier insuffisante, merci d'ajouter un produit à votre commande");
 
