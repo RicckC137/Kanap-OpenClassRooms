@@ -62,6 +62,7 @@ async function fetchPrice() {
 
     } catch (err) {
         alert("Panier vide")
+        window.location.href = "index.html"
     }
 
 
@@ -331,6 +332,7 @@ const addKanapToDom = (kanap) => {
             let totalInQuantity = totalQuantity.textContent;
             // Fonction validation de la quantité
             if (totalInQuantity <= 0) {
+                alert(1)
                 alert("Quantité du panier insuffisante, merci d'ajouter un produit à votre commande");
 
             }
