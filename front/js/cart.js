@@ -2,18 +2,6 @@
 
 const kanap = localStorage.getItem('cart');
 let parseKanap = JSON.parse(kanap);
-
-// Constante somme quantité totale des articles
-
-function sumQty() {
-
-    let sumQty = parseKanap.reduce((accumulateur, element) => {
-        return Number(accumulateur) + Number(element.quantity)
-    }, 0)
-    let sumTotal = 0;
-}
-
-
 // Fetch pouR récupérer les articles à partir du local storage et en les complétants des informations contenues dans l'API
 async function fetchProducts() {
     try {
@@ -25,7 +13,7 @@ async function fetchProducts() {
         })
 
     } catch (error) {
-
+        alert("Erreur")
     }
 
 }
@@ -67,7 +55,8 @@ async function fetchPrice() {
 
 
 
-} fetchPrice()
+}
+fetchPrice()
 
 let kanapFromStorage = JSON.parse(localStorage.getItem("cart"));
 
@@ -180,7 +169,8 @@ const addKanapToDom = (kanap) => {
             }
             )
         })
-    } itemQuantityArray()
+    }
+    itemQuantityArray()
 
 
 
@@ -213,7 +203,8 @@ const addKanapToDom = (kanap) => {
             )
         }
         )
-    } deleteButton();
+    }
+    deleteButton();
 
 
     // Récupération du noeud parent du formulaire 
@@ -379,17 +370,18 @@ const addKanapToDom = (kanap) => {
                         },
                     })
                     .then((response) => response.json(response))
-                    .then((data) => {
+                    .then((data) => { // Si ok, envoi de la commande avec ID-order 
                         localStorage.setItem("orderId", data.orderId);
                         document.location.href = "confirmation.html";
                     })
 
-            } else {
+            } else {// Si non, message erreur
                 alert("Informations manquantes ")
             }
 
         }
         )
-    } submit()
+    }
+    submit()
 }
 fetchProducts();
