@@ -4,50 +4,65 @@ const kanap = localStorage.getItem('cart');
 let parseKanap = JSON.parse(kanap);
 
 // Constante somme quantité totale des articles
-let sumQty = parseKanap.reduce((accumulateur, element) => {
-    return Number(accumulateur) + Number(element.quantity)
-}, 0)
-let sumTotal = 0;
+
+function sumQty() {
+
+    let sumQty = parseKanap.reduce((accumulateur, element) => {
+        return Number(accumulateur) + Number(element.quantity)
+    }, 0)
+    let sumTotal = 0;
+}
 
 
 // Fetch pouR récupérer les articles à partir du local storage et en les complétants des informations contenues dans l'API
 async function fetchProducts() {
-    const kanaps = await parseKanap.map(async kanap => {
-        const res = await fetch(`http://localhost:3000/api/products/${kanap.id}`);
-        const data = await res.json();
-        addKanapToDom({ ...data, ...kanap });
+    try {
+        const kanaps = await parseKanap.map(async kanap => {
+            const res = await fetch(`http://localhost:3000/api/products/${kanap.id}`);
+            const data = await res.json();
+            addKanapToDom({ ...data, ...kanap });
 
-    })
+        })
+
+    } catch (error) {
+
+    }
+
 }
 // Fonction asynchrone pour le calcul du total du prix
 async function fetchPrice() {
-    let kanapFromStorage = JSON.parse(localStorage.getItem("cart"));
-
-    const kanaps = await Promise.all(kanapFromStorage.map(async kanap => {
-        const res = await fetch(`http://localhost:3000/api/products/${kanap.id}`);
-        const data = await res.json();
-        var quantity = kanap.quantity;
-        return ({ ...data, ...kanap });
-
-    }))
-    console.log(kanaps)
-    for (const i of kanaps) {
+    try {
         let kanapFromStorage = JSON.parse(localStorage.getItem("cart"));
-        const price = i.price;
-        for (const d of kanapFromStorage) {
-            let total = kanaps.reduce(function (previousValue, currentValue) {
-                return Number(previousValue) + Number(currentValue.price) * Number(currentValue.quantity);
-            }, 0);
-            console.log(total)
-            const cartsumTotal = document.querySelector("#totalPrice");
-            cartsumTotal.textContent = total;
-        }
-    }
 
-    const totalQuantity = document.querySelector("#totalQuantity");
-    totalQuantity.textContent = kanaps.reduce(function (previousValue, currentValue) {
-        return Number(previousValue) + Number(currentValue.quantity);
-    }, 0);
+        const kanaps = await Promise.all(kanapFromStorage.map(async kanap => {
+            const res = await fetch(`http://localhost:3000/api/products/${kanap.id}`);
+            const data = await res.json();
+
+            return ({ ...data, ...kanap });
+
+
+        }))
+        console.log(kanaps)
+        for (const i of kanaps) {
+            let kanapFromStorage = JSON.parse(localStorage.getItem("cart"));
+            for (const d of kanapFromStorage) {
+                let total = kanaps.reduce(function (previousValue, currentValue) {
+                    return Number(previousValue) + Number(currentValue.price) * Number(currentValue.quantity);
+                }, 0);
+                console.log(total)
+                const cartsumTotal = document.querySelector("#totalPrice");
+                cartsumTotal.textContent = total;
+            }
+        }
+
+        const totalQuantity = document.querySelector("#totalQuantity");
+        totalQuantity.textContent = kanaps.reduce(function (previousValue, currentValue) {
+            return Number(previousValue) + Number(currentValue.quantity);
+        }, 0);
+
+    } catch (err) {
+        alert("Panier vide")
+    }
 
 
 
@@ -60,8 +75,6 @@ let kanapFromStorage = JSON.parse(localStorage.getItem("cart"));
 const addKanapToDom = (kanap) => {
 
     console.log(kanap)
-
-    const id = kanap._id;
     const imageUrlofKanap = kanap.imageUrl;
     const nameOfKanap = kanap.name;
     const cartItem = document.querySelector("#cart__items");
@@ -126,8 +139,6 @@ const addKanapToDom = (kanap) => {
     deleteQuantity.appendChild(pDeleteQuantity)
 
     const totalQuantity = document.querySelector("#totalQuantity");
-    totalQuantity.textContent = sumQty;
-
     const itemQuantity = document.querySelector(".itemQuantity").value;
     const articleColorInPage = document.querySelector(".cart__item");
     const colorInCaddy = articleColorInPage.dataset.color;
@@ -144,46 +155,29 @@ const addKanapToDom = (kanap) => {
                 var liveQuantity = e.currentTarget.value;
                 const color = e.currentTarget.getAttribute('color');
                 const id = e.currentTarget.id;
-                const pricecurrent = e.currentTarget.price
 
                 let kanapFromStorage = JSON.parse(localStorage.getItem("cart"));
 
                 for (let i of kanapFromStorage) {
-
-
                     if (id === i.id && color === i.color) {
 
                         i.quantity = liveQuantity;
-
-
                         let sumQty = kanapFromStorage.reduce((accumulateur, element) => {
                             return Number(accumulateur) + Number(element.quantity)
                         }, 0)
-
-
-                        console.log(sumQty)
                         totalQuantity.textContent = sumQty;
 
                         if (liveQuantity < 0 && sumQty < 0) {
-
                             i.quantity = 0;
-
                             liveQuantity = 0;
                             input.value = 0;
-
-
                         }
                     }
-
                 }
-
                 localStorage.setItem('cart', JSON.stringify(kanapFromStorage))
-
                 fetchPrice()
-
             }
             )
-
         })
     } itemQuantityArray()
 
@@ -232,11 +226,8 @@ const addKanapToDom = (kanap) => {
 
     const validFirstName = function (inputFirstName) {
         let firstNameRegex = new RegExp("^[a-zA-Z ,.'-]+$");
-
         let testFirstName = firstNameRegex.test(inputFirstName.value)
-
         const errorFirstName = document.querySelector("#firstNameErrorMsg")
-
         if (testFirstName) {
             console.log('true');
             errorFirstName.textContent = ""
@@ -256,11 +247,8 @@ const addKanapToDom = (kanap) => {
 
     const validLastName = function (inputLastName) {
         let lastNameRegex = new RegExp("^[a-zA-Z ,.'-]+$");
-
         let testLastName = lastNameRegex.test(inputLastName.value)
-
         const errorLastName = document.querySelector("#lastNameErrorMsg")
-
         if (testLastName) {
             console.log('true');
             errorLastName.textContent = ""
@@ -280,19 +268,14 @@ const addKanapToDom = (kanap) => {
 
     const validAddress = function (inputAdress) {
         let addressRegex = new RegExp("[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+");
-
         let testAddress = addressRegex.test(inputAdress.value)
-
         const errorAddress = document.querySelector("#addressErrorMsg")
-
-
         if (testAddress) {
             console.log('true');
             errorAddress.textContent = ""
             return true
         }
         else {
-
             errorAddress.textContent = "Erreur sur l'adresse"
             return false
         }
@@ -306,11 +289,8 @@ const addKanapToDom = (kanap) => {
 
     const validCity = function (inputCity) {
         let cityRegex = new RegExp("^[a-zA-Z ,.'-]+$");
-
         let testCity = cityRegex.test(inputCity.value);
-
         const errorCity = document.querySelector("#cityErrorMsg");
-
         if (testCity) {
             console.log('true');
             errorCity.textContent = ""
@@ -330,12 +310,8 @@ const addKanapToDom = (kanap) => {
 
     const validEmail = function (inputEmail) {
         let emailRegex = new RegExp('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$');
-
         let testEmail = emailRegex.test(inputEmail.value)
-
         const errorEmail = document.querySelector("#emailErrorMsg");
-
-
         if (testEmail) {
             console.log('true');
             errorEmail.textContent = ""
@@ -353,13 +329,9 @@ const addKanapToDom = (kanap) => {
         document.getElementById("order").addEventListener("click", (e) => {
             e.preventDefault();
             let totalInQuantity = totalQuantity.textContent;
-
             //Fonction validation de la quantité
             if (totalInQuantity <= 0) {
-                e.preventDefault();
                 alert("Quantité du panier insuffisante, merci d'ajouter un produit à votre commande");
-
-                return
 
             }
             else if // Validation des éléments saisis dans le formulaire par l'utilisateur
@@ -416,6 +388,6 @@ const addKanapToDom = (kanap) => {
 
         }
         )
-    } submit();
+    }
 }
 fetchProducts();
